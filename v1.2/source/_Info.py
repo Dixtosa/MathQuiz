@@ -1,0 +1,9 @@
+Full_Name="Brain Accelerator" #Name
+Name="BA"              #Name Used
+Full_Version="0.1"      #Full Version
+Version="0.1"           #Version Used
+Copyright = "(C) D!Xwar3"
+Description ="Tool for Brain Accelerate"
+WebSite = "http://www.Dixtosa.wordpress.com"
+Developers = ["D!Xware3 Company"]
+License = "GNU"
