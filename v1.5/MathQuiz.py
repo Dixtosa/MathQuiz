@@ -29,12 +29,14 @@ class MathQuizFrame(wx.Frame):
 		if self.game_p!=None:
 			for child in self.game_p.GetChildren():
 				child.Destroy()
-		dro = wx.StaticText(self.MainPanel,-1, u"დრო:",(25,75))
+		dro = wx.StaticText(self.MainPanel,-1, u"Duration:",(25,75))
 		dro.SetFont(self.font)
-		self.timer_value = wx.TextCtrl(self.MainPanel,-1,"",(125,75),wx.Size(100,100),style = wx.TE_CENTRE)
+		self.timer_value = wx.TextCtrl(self.MainPanel,-1, "30", (125,75),wx.Size(100,100), style = wx.TE_CENTRE)
 		self.timer_value.SetFont(self.font50)
+		self.timer_value.SetFocus()
+		self.timer_value.Bind(wx.EVT_KEY_DOWN, self.onKeyDown)
 		
-		wami = wx.StaticText(self.MainPanel,-1, u"წამი",(25,75))
+		wami = wx.StaticText(self.MainPanel,-1, u"seconds", (25,75))
 		wami.SetFont(self.font)
 		
 		
@@ -52,7 +54,13 @@ class MathQuizFrame(wx.Frame):
 		
 		self.MainPanel.SetSizer(sizer_2)
 		self.MainPanel.Layout()
-	def start(self, evt):
+	def onKeyDown(self, event):
+		keycode = event.GetKeyCode()
+		if keycode in [wx.WXK_NUMPAD_ENTER, wx.WXK_RETURN]:
+			self.start(event)
+		else:
+			event.Skip()
+	def start(self, event):
 		try:
 			self.gameDuration = int(self.timer_value.GetValue())
 			if self.gameDuration < 10 or self.gameDuration > 60*10:
@@ -173,30 +181,26 @@ class GamePanel(wx.Panel):
 			else:
 				self.cfg.Write("allResults", "")
 				
-			res.remove("")#I Have no idea why this is in it
+			if "" in res:res.remove("")#I Have no idea why this is in it
 			score = "%d/%d"%(self.count_answered, self.gameDurationi)
 			res.append(score)
-			##fractionize and defractionize in order to sort easily
-			
-			print res
-			res = map(fractions.Fraction, res)
-			res.sort()
-			res.reverse()
-			res = map(str, res)
-			#
+
+			res.sort(key = fractions.Fraction, reverse = True)
 			self.cfg.Write("allResults", ','.join(res))
 			
 			res = res[:5]
 			
 			fr = wx.MiniFrame(None, -1, "results")
-			wx.StaticText(fr,-1,"TOP scores - answered/time",(0,0))
+			wx.StaticText(fr,-1,"TOP5 scores - answered/time",(0,0))
 			for pos, i in enumerate(res):
 				wx.StaticText(fr, -1, "%d)        %s"%(pos+1, i), (0, 25 + pos*25))
 			
 			
 			self.f = fr
-			wx.StaticText(fr,-1,'damtavrda.\nshedegi: %s qula\nxangrdzlivoba: %s wami\n\n\n\t\tTavidan?'%(self.count_answered,self.gameDurationi),(150,150))
-			wx.Button(fr,11,"close",(150,100),wx.Size(50,25)).Bind(wx.EVT_BUTTON,self.close)
+			wx.StaticText(fr,-1,'Finished.\n Ranking: %s score\n Duratiion: %s second\n\n\n\t\t'%(self.count_answered,self.gameDurationi),(150,150))
+			closeButton = wx.Button(fr,11,"close",(150,100), wx.Size(50,25))
+			closeButton.Bind(wx.EVT_BUTTON, self.close)
+			closeButton.SetFocus()
 			fr.Centre()
 			fr.Show()
 	def close(self,e):
@@ -211,10 +215,11 @@ class GamePanel(wx.Panel):
 		a = random.randrange(10)
 		op = random.choice("+-/*")
 		b = random.randrange(10)
-		if op=="/" and (b==0 or a%b!=0):
+		exp = "%d %s %d" % (a, op, b)
+		if (op == "/" and (b == 0 or a%b != 0)) or eval(exp) < 0:
 			return self.generateExpression()
 		else:
-			return "%d %s %d" % (a, op, b)
+			return exp
 		
 app = wx.App(0)
 frame = MathQuizFrame()
