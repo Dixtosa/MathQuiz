@@ -1,5 +1,12 @@
-### MathQuiz ###
+A very simple application. User is aksed a mathematical question and answers (=calculates) in an adjustable duration.
 
-A very simple application. User answers (=calculates) very simple mathematical expressions. The game duration is adjustable.
+== Whats new ==
+=== 1.2 ===
+This version is kept for only historical purposes only and beginners are not encouraged to read it for it might confuse them :)
 
-version 1.2 and prior are *very* old and is not to be read by beginner programmers :D. There are here just for historical reasons.
+=== 1.5 ===
+Removed some of the premature stuff (e.g. splash, about and intro). Made the code a little more clever.
+
+== TO-DO ==
+* Fix config and ranking
+* Use pairs of numbers instead of fractions.Fraction
